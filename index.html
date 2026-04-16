@@ -70,7 +70,7 @@
 <div class="table-card">
   <h3>Recent Boards (Last 7 Days)</h3>
   <table>
-    <thead><tr><th>Date</th><th>Organization</th><th>Creator</th><th>Type</th></tr></thead>
+    <thead><tr><th>Date</th><th>Organization</th><th>Creator</th><th>Board ID</th><th>Type</th></tr></thead>
     <tbody id="recentTable"></tbody>
   </table>
 </div>
@@ -270,7 +270,7 @@ const recent = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 7).sort((
 document.getElementById('recentTable').innerHTML = (recent.length ? recent : DATA.slice(0,5)).map(d => {
   const badgeClass = d.type === 'from_scratch' ? 'badge-scratch' : d.type === 'template' ? 'badge-template' : 'badge-insp';
   const label = d.type === 'from_scratch' ? 'From Scratch' : d.type === 'template' ? 'Template' : 'Inspirational';
-  return `<tr><td>${fmt(d.date)}</td><td>${d.name}</td><td>${d.creator}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
+  return `<tr><td>${fmt(d.date)}</td><td>${d.name}</td><td>${d.creator}</td><td>${d.board_id}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
 }).join('');
 </script>
 </body>
