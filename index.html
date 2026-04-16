@@ -195,7 +195,7 @@ new Chart(document.getElementById('weeklyChart'), {
     datasets: [
       {label:'Fully AI', data:weeks.map(w=>weekMap[w].from_scratch), backgroundColor:'#58a6ff', borderRadius:4},
       {label:'From Template', data:weeks.map(w=>weekMap[w].template), backgroundColor:'#bc8cff', borderRadius:4},
-      {label:'From Inspirational Board', data:weeks.map(w=>weekMap[w].inspirational_board), backgroundColor:'#56d364', borderRadius:4},
+      {label:'From Board', data:weeks.map(w=>weekMap[w].inspirational_board), backgroundColor:'#56d364', borderRadius:4},
     ]
   },
   options: {
@@ -213,7 +213,7 @@ DATA.forEach(d => typeCounts[d.type]++);
 new Chart(document.getElementById('typeChart'), {
   type: 'doughnut',
   data: {
-    labels: ['Fully AI', 'From Template', 'From Inspirational Board'],
+    labels: ['Fully AI', 'From Template', 'From Board'],
     datasets: [{
       data: [typeCounts.from_scratch, typeCounts.template, typeCounts.inspirational_board],
       backgroundColor: ['#58a6ff','#bc8cff','#56d364'],
@@ -261,7 +261,7 @@ const topCreators = Object.entries(creatorMap).sort((a,b)=>b[1].count-a[1].count
 document.getElementById('creatorsTable').innerHTML = topCreators.map(([email, info]) => {
   const topType = Object.entries(info.types).sort((a,b)=>b[1]-a[1])[0][0];
   const badgeClass = topType === 'from_scratch' ? 'badge-scratch' : topType === 'template' ? 'badge-template' : 'badge-insp';
-  const label = topType === 'from_scratch' ? 'Fully AI' : topType === 'template' ? 'From Template' : 'From Inspirational Board';
+  const label = topType === 'from_scratch' ? 'Fully AI' : topType === 'template' ? 'From Template' : 'From Board';
   return `<tr><td>${email}</td><td>${info.org}</td><td>${info.count}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
 }).join('');
 
@@ -269,7 +269,7 @@ document.getElementById('creatorsTable').innerHTML = topCreators.map(([email, in
 const recent = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 7).sort((a,b) => new Date(b.date)-new Date(a.date));
 document.getElementById('recentTable').innerHTML = (recent.length ? recent : DATA.slice(0,5)).map(d => {
   const badgeClass = d.type === 'from_scratch' ? 'badge-scratch' : d.type === 'template' ? 'badge-template' : 'badge-insp';
-  const label = d.type === 'from_scratch' ? 'From Scratch' : d.type === 'template' ? 'Template' : 'Inspirational';
+  const label = d.type === 'from_scratch' ? 'From Scratch' : d.type === 'template' ? 'Template' : 'From Board';
   return `<tr><td>${fmt(d.date)}</td><td>${d.name}</td><td>${d.creator}</td><td>${d.board_id}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
 }).join('');
 </script>
