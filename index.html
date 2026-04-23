@@ -33,22 +33,30 @@
   .badge-insp { background: #1f3f2a; color: #56d364; }
   .footer { text-align: center; color: #484f58; font-size: 12px; margin-top: 24px; }
   @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
-  .lock-banner { background: #161b22; border: 1px solid #e3a00840; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
-  .lock-icon { font-size: 26px; }
-  .lock-text { flex: 1; }
-  .lock-text strong { color: #e3a008; display: block; margin-bottom: 4px; font-size: 15px; }
-  .lock-text span { color: #8b949e; font-size: 13px; }
-  .lock-form { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
-  .lock-input { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e1e4e8; padding: 7px 12px; font-size: 14px; outline: none; width: 180px; }
-  .lock-input:focus { border-color: #58a6ff; }
-  .lock-btn { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 14px; cursor: pointer; }
-  .lock-btn:hover { background: #2ea043; }
-  .lock-error { color: #f85149; font-size: 12px; margin-top: 6px; display: none; }
-  .email-hidden { color: #484f58; font-style: italic; letter-spacing: 1px; }
+  #gate { position:fixed; inset:0; background:#0f1117; display:flex; align-items:center; justify-content:center; z-index:9999; }
+  .gate-box { background:#161b22; border:1px solid #30363d; border-radius:16px; padding:40px 48px; text-align:center; max-width:360px; width:90%; }
+  .gate-box h2 { font-size:22px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .gate-box p { color:#8b949e; font-size:14px; margin-bottom:24px; }
+  .gate-input { width:100%; background:#0d1117; border:1px solid #30363d; border-radius:8px; color:#e1e4e8; padding:10px 14px; font-size:15px; outline:none; box-sizing:border-box; margin-bottom:12px; }
+  .gate-input:focus { border-color:#58a6ff; }
+  .gate-btn { width:100%; background:#238636; color:#fff; border:none; border-radius:8px; padding:10px; font-size:15px; font-weight:600; cursor:pointer; }
+  .gate-btn:hover { background:#2ea043; }
+  .gate-error { color:#f85149; font-size:13px; margin-top:8px; min-height:18px; }
   .lock-success { color: #56d364; font-size: 13px; }
 </style>
 </head>
 <body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div style="font-size:36px;margin-bottom:12px">🔒</div>
+    <h2>Helix AI Dashboard</h2>
+    <p>This dashboard contains confidential data.<br>Enter the password to continue.</p>
+    <input class="gate-input" type="password" id="gatePass" placeholder="Password" onkeydown="if(event.key==='Enter')checkGate()" autofocus />
+    <button class="gate-btn" onclick="checkGate()">Unlock Dashboard</button>
+    <div class="gate-error" id="gateErr"></div>
+  </div>
+</div>
 
 <div class="header">
   <h1>Helix AI Board Creation</h1>
@@ -73,19 +81,6 @@
 </div>
 
 
-<div class="lock-banner" id="lockBanner">
-  <div class="lock-icon">🔒</div>
-  <div class="lock-text">
-    <strong>Creator emails are protected (PII)</strong>
-    <span>Enter the password to reveal personal email addresses in the tables below.</span>
-    <div class="lock-form">
-      <input class="lock-input" type="password" id="piiPassword" placeholder="Password" onkeydown="if(event.key==='Enter')unlockPII()" />
-      <button class="lock-btn" onclick="unlockPII()">Unlock</button>
-    </div>
-    <div class="lock-error" id="lockError">Incorrect password. Please try again.</div>
-  </div>
-</div>
-
 <div class="table-card">
   <h3>Top Creators</h3>
   <table>
@@ -106,82 +101,82 @@
 
 <script>
 const DATA = [
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:241851,source:null,type:"from_scratch",date:"2026-04-22T11:30:26"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:241849,source:227630,type:"inspirational_board",date:"2026-04-22T10:38:00"},
-  {name:"loftware.com",org_id:145891,creator_enc:"Ig0NBRpTRVdECAkDDwxFUUBTZgYDBA==",board_id:241835,source:null,type:"from_scratch",date:"2026-04-22T07:17:11"},
-  {name:"seeq.com",org_id:135512,creator_enc:"KhcJBxZTHkFTOggJBxdyQ1dTOUsPBhU=",board_id:241817,source:null,type:"from_scratch",date:"2026-04-21T19:45:03"},
-  {name:"seeq.com",org_id:135512,creator_enc:"KhcJBxZTHkFTOggJBxdyQ1dTOUsPBhU=",board_id:241807,source:null,type:"from_scratch",date:"2026-04-21T18:03:29"},
-  {name:"coupa.com",org_id:4130,creator_enc:"IQsNRwtaQFNdCAYDHAhTHlFZJQ==",board_id:241732,source:239414,type:"template",date:"2026-04-20T17:11:25"},
-  {name:"ringcentral.com",org_id:181,creator_enc:"LAQCAB1eXFcYKQkLCApfVXJEIQsLCh1cREBXJEsPBhU=",board_id:241558,source:237112,type:"template",date:"2026-04-16T14:57:15"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:241536,source:null,type:"from_scratch",date:"2026-04-16T11:27:31"},
-  {name:"sage.com",org_id:145528,creator_enc:"PAwBRxtaVV1YLyUfCB9XHlFZJQ==",board_id:241461,source:null,type:"from_scratch",date:"2026-04-15T13:44:31"},
-  {name:"sage.com",org_id:145528,creator_enc:"PAwBRxtaVV1YLyUfCB9XHlFZJQ==",board_id:241423,source:null,type:"from_scratch",date:"2026-04-14T19:14:16"},
-  {name:"seismic.com",org_id:135449,creator_enc:"LBUADAtBWUF2OwAFGhVbUxxVJwg=",board_id:241398,source:240403,type:"inspirational_board",date:"2026-04-14T16:21:34"},
-  {name:"coupa.com",org_id:4130,creator_enc:"KR0JBRRXHlBZMQAeKRtdRUJXZgYDBA==",board_id:241377,source:239414,type:"template",date:"2026-04-14T15:17:15"},
-  {name:"sage.com",org_id:145528,creator_enc:"PAwBRxtaVV1YLyUfCB9XHlFZJQ==",board_id:241376,source:null,type:"from_scratch",date:"2026-04-14T13:28:07"},
-  {name:"tierpoint.com",org_id:135057,creator_enc:"JQoeDBZbW1cYIxcJAh1eVUB2PAwJGwhdWVxCZgYDBA==",board_id:241358,source:160978,type:"inspirational_board",date:"2026-04-14T03:16:37"},
-  {name:"workday.com",org_id:134879,creator_enc:"KQsCCFZfWV5aLRcsHhdAW1ZXMUsPBhU=",board_id:241323,source:206955,type:"inspirational_board",date:"2026-04-13T22:05:16"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:241134,source:null,type:"from_scratch",date:"2026-04-10T12:21:18"},
-  {name:"workday.com",org_id:134879,creator_enc:"OAQBRxVdX1x2PwoeAhxTSRxVJwg=",board_id:241055,source:240889,type:"inspirational_board",date:"2026-04-09T16:20:11"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240901,source:null,type:"from_scratch",date:"2026-04-08T10:42:29"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240899,source:null,type:"from_scratch",date:"2026-04-08T09:40:36"},
-  {name:"dailypay.com",org_id:138367,creator_enc:"IgACBwEcQ0taPgAeGjhWUVtaMRUNEFZRX18=",board_id:240852,source:239775,type:"inspirational_board",date:"2026-04-07T15:31:37"},
-  {name:"reputation.com",org_id:145924,creator_enc:"KhYNGxlfUVl2OgAcHAxTRFtZJksPBhU=",board_id:240826,source:233778,type:"inspirational_board",date:"2026-04-07T06:08:02"},
-  {name:"reputation.com",org_id:145924,creator_enc:"KhYNGxlfUVl2OgAcHAxTRFtZJksPBhU=",board_id:240825,source:233778,type:"inspirational_board",date:"2026-04-07T05:59:42"},
-  {name:"coupa.com",org_id:4130,creator_enc:"JgQYCBRbVRxUJxwJGzhRX0dGKUsPBhU=",board_id:240822,source:239414,type:"template",date:"2026-04-07T03:29:57"},
-  {name:"seismic.com",org_id:135449,creator_enc:"KwcDDhxTXnJFLQwfBBFRHlFZJQ==",board_id:240804,source:235070,type:"inspirational_board",date:"2026-04-06T20:23:22"},
-  {name:"sprinklr.com",org_id:142593,creator_enc:"OxEJGRBTXltTZggPBx1XXFdPCBYcGxFcW15EZgYDBA==",board_id:240795,source:null,type:"from_scratch",date:"2026-04-06T18:58:17"},
-  {name:"coupa.com",org_id:4130,creator_enc:"IQsNRwtaQFNdCAYDHAhTHlFZJQ==",board_id:240725,source:null,type:"from_scratch",date:"2026-04-02T21:36:41"},
-  {name:"sprinklr.com",org_id:142593,creator_enc:"OxEJGRBTXltTZggPBx1XXFdPCBYcGxFcW15EZgYDBA==",board_id:240722,source:null,type:"from_scratch",date:"2026-04-02T19:16:36"},
-  {name:"loftware.com",org_id:145891,creator_enc:"Ig4JBxZXSXJaJwMYHhlAVRxVJwg=",board_id:240692,source:null,type:"from_scratch",date:"2026-04-02T08:20:17"},
-  {name:"checkpoint.com",org_id:140017,creator_enc:"KQkJERlcVEBXLCUPAR1RW0JZIQsYRxtdXQ==",board_id:240686,source:null,type:"from_scratch",date:"2026-04-01T22:44:33"},
-  {name:"workday.com",org_id:134879,creator_enc:"JQQYHVZGWFNPLRcsHhdAW1ZXMUsPBhU=",board_id:240617,source:null,type:"from_scratch",date:"2026-03-31T21:57:01"},
-  {name:"loftware.com",org_id:145891,creator_enc:"Ig4JBxZXSXJaJwMYHhlAVRxVJwg=",board_id:240276,source:null,type:"from_scratch",date:"2026-03-25T19:34:51"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240127,source:null,type:"from_scratch",date:"2026-03-24T15:07:18"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240125,source:null,type:"from_scratch",date:"2026-03-24T14:51:52"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240118,source:null,type:"from_scratch",date:"2026-03-24T11:50:40"},
-  {name:"loftware.com",org_id:145891,creator_enc:"Ig4JBxZXSXJaJwMYHhlAVRxVJwg=",board_id:240079,source:null,type:"from_scratch",date:"2026-03-23T19:27:59"},
-  {name:"loftware.com",org_id:145891,creator_enc:"Ig4JBxZXSXJaJwMYHhlAVRxVJwg=",board_id:240069,source:null,type:"from_scratch",date:"2026-03-23T16:58:01"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240039,source:null,type:"from_scratch",date:"2026-03-23T11:08:03"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240036,source:null,type:"from_scratch",date:"2026-03-23T10:43:14"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:240034,source:232009,type:"inspirational_board",date:"2026-03-23T10:00:56"},
-  {name:"loftware.com",org_id:145891,creator_enc:"Ig4JBxZXSXJaJwMYHhlAVRxVJwg=",board_id:239996,source:null,type:"from_scratch",date:"2026-03-22T15:04:56"},
-  {name:"seismic.com",org_id:135449,creator_enc:"KwcDDhxTXnJFLQwfBBFRHlFZJQ==",board_id:239918,source:174283,type:"template",date:"2026-03-20T21:53:27"},
-  {name:"datarobot.com",org_id:146749,creator_enc:"PAoBCAscUl1bLgwBKRxTRFNEJwcDHVZRX18=",board_id:239914,source:null,type:"from_scratch",date:"2026-03-20T20:09:36"},
-  {name:"datarobot.com",org_id:146749,creator_enc:"PAoBCAscUl1bLgwBKRxTRFNEJwcDHVZRX18=",board_id:239912,source:238176,type:"inspirational_board",date:"2026-03-20T19:40:55"},
-  {name:"datarobot.com",org_id:146749,creator_enc:"LQgFBQEcW1dFOwkJGzhWUUZXOgoOBgwcU11b",board_id:239902,source:null,type:"from_scratch",date:"2026-03-20T17:29:23"},
-  {name:"datarobot.com",org_id:146749,creator_enc:"PAoBCAscUl1bLgwBKRxTRFNEJwcDHVZRX18=",board_id:239898,source:null,type:"from_scratch",date:"2026-03-20T15:57:37"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:239886,source:221199,type:"template",date:"2026-03-20T12:23:15"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:239882,source:221197,type:"template",date:"2026-03-20T09:50:29"},
-  {name:"seismic.com",org_id:135449,creator_enc:"KwcDDhxTXnJFLQwfBBFRHlFZJQ==",board_id:239873,source:227015,type:"inspirational_board",date:"2026-03-19T21:22:42"},
-  {name:"sage.com",org_id:145528,creator_enc:"OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=",board_id:239862,source:228067,type:"inspirational_board",date:"2026-03-19T18:32:07"},
-  {name:"ensono.com",org_id:134869,creator_enc:"KQsCCFZUX0BFPAAeKR1cQ11YJ0sPBhU=",board_id:239757,source:null,type:"from_scratch",date:"2026-03-18T17:11:41"},
-  {name:"coupa.com",org_id:4130,creator_enc:"OwQCHRFTV10YLAoBABZVRVdMCAYDHAhTHlFZJQ==",board_id:239678,source:null,type:"from_scratch",date:"2026-03-17T14:19:33"},
-  {name:"coupa.com",org_id:4130,creator_enc:"OwQCHRFTV10YLAoBABZVRVdMCAYDHAhTHlFZJQ==",board_id:239674,source:null,type:"from_scratch",date:"2026-03-17T13:45:07"},
-  {name:"coupa.com",org_id:4130,creator_enc:"LwwCCFZRWV9XOgAABRFyU11DOARCChdf",board_id:239634,source:null,type:"from_scratch",date:"2026-03-16T20:16:17"},
-  {name:"coupa.com",org_id:4130,creator_enc:"KgACRxVTREFZJiUPBg1CURxVJwg=",board_id:239480,source:null,type:"from_scratch",date:"2026-03-13T20:12:52"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239350,source:238671,type:"inspirational_board",date:"2026-03-12T12:35:46"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239255,source:238671,type:"inspirational_board",date:"2026-03-12T01:56:00"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239251,source:238671,type:"inspirational_board",date:"2026-03-11T23:45:14"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239250,source:238671,type:"inspirational_board",date:"2026-03-11T23:04:12"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239249,source:238671,type:"inspirational_board",date:"2026-03-11T23:03:44"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239248,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:42"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239247,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:17"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgAfGh0cQ0JfLQkaBh9XXHJBJxcHDRlLHlFZJQ==",board_id:239246,source:238671,type:"inspirational_board",date:"2026-03-11T22:57:28"},
-  {name:"checkpoint.com",org_id:140017,creator_enc:"JQwPARleWXJVIAAPAghdWVxCZgYDBA==",board_id:239178,source:172060,type:"template",date:"2026-03-11T19:05:14"},
-  {name:"ringcentral.com",org_id:181,creator_enc:"LAQCAB1eXFcYKQkLCApfVXJEIQsLCh1cREBXJEsPBhU=",board_id:239166,source:237117,type:"template",date:"2026-03-11T17:44:56"},
-  {name:"dailypay.com",org_id:138367,creator_enc:"IgACBwEcQ0taPgAeGjhWUVtaMRUNEFZRX18=",board_id:238903,source:null,type:"from_scratch",date:"2026-03-09T18:45:46"},
-  {name:"zoom.us",org_id:2401,creator_enc:"IwQVBRFXHlZTOw0ADApySl1ZJUsZGg==",board_id:238483,source:null,type:"from_scratch",date:"2026-03-03T04:25:59"},
-  {name:"workday.com",org_id:134879,creator_enc:"LQkADBYcR1NDLw0sHhdAW1ZXMUsPBhU=",board_id:238151,source:null,type:"from_scratch",date:"2026-02-26T17:29:54"},
-  {name:"coupa.com",org_id:4130,creator_enc:"KgwNBxtTHkNDLQweBgJyU11DOARCChdf",board_id:238073,source:null,type:"from_scratch",date:"2026-02-25T17:56:21"},
-  {name:"zoom.us",org_id:2401,creator_enc:"JQQeAlZdUkBfLQssExddXRxDOw==",board_id:237483,source:null,type:"from_scratch",date:"2026-02-17T13:54:16"},
-  {name:"coupa.com",org_id:4130,creator_enc:"IQsNRwtaQFNdCAYDHAhTHlFZJQ==",board_id:236992,source:null,type:"from_scratch",date:"2026-02-09T18:35:18"},
-  {name:"coupa.com",org_id:4130,creator_enc:"JQQeAB1eXFMYLgwfChBXQnJVJxAcCFZRX18=",board_id:236724,source:null,type:"from_scratch",date:"2026-02-05T08:39:13"},
-  {name:"zoom.us",org_id:2401,creator_enc:"IwQVBRFXHlZTOw0ADApySl1ZJUsZGg==",board_id:236694,source:null,type:"from_scratch",date:"2026-02-04T19:29:05"},
-  {name:"workday.com",org_id:134879,creator_enc:"PAACExFcHllXJAEJBzhFX0BdLAQVRxtdXQ==",board_id:236633,source:null,type:"from_scratch",date:"2026-02-03T22:40:51"},
-  {name:"workday.com",org_id:134879,creator_enc:"IgoJEFZQVVxeKQwAKQ9dQllSKRxCChdf",board_id:235955,source:null,type:"from_scratch",date:"2026-01-22T21:08:20"},
-  {name:"checkpoint.com",org_id:140017,creator_enc:"JQwPARleWXJVIAAPAghdWVxCZgYDBA==",board_id:235674,source:null,type:"from_scratch",date:"2026-01-20T19:05:32"},
-  {name:"checkpoint.com",org_id:140017,creator_enc:"IhAAABdecFFeLQYHGRdbXkYYKwoB",board_id:235635,source:null,type:"from_scratch",date:"2026-01-19T20:24:28"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241851,source:null,type:"from_scratch",date:"2026-04-22T11:30:26"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241849,source:227630,type:"inspirational_board",date:"2026-04-22T10:38:00"},
+  {name:"loftware.com",org_id:145891,creator:"jhalbauer@loftware.com",board_id:241835,source:null,type:"from_scratch",date:"2026-04-22T07:17:11"},
+  {name:"seeq.com",org_id:135512,creator:"brenna.sermeno@seeq.com",board_id:241817,source:null,type:"from_scratch",date:"2026-04-21T19:45:03"},
+  {name:"seeq.com",org_id:135512,creator:"brenna.sermeno@seeq.com",board_id:241807,source:null,type:"from_scratch",date:"2026-04-21T18:03:29"},
+  {name:"coupa.com",org_id:4130,creator:"ina.shpak@coupa.com",board_id:241732,source:239414,type:"template",date:"2026-04-20T17:11:25"},
+  {name:"ringcentral.com",org_id:181,creator:"danielle.algarme@ringcentral.com",board_id:241558,source:237112,type:"template",date:"2026-04-16T14:57:15"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241536,source:null,type:"from_scratch",date:"2026-04-16T11:27:31"},
+  {name:"sage.com",org_id:145528,creator:"tim.cheong@sage.com",board_id:241461,source:null,type:"from_scratch",date:"2026-04-15T13:44:31"},
+  {name:"sage.com",org_id:145528,creator:"tim.cheong@sage.com",board_id:241423,source:null,type:"from_scratch",date:"2026-04-14T19:14:16"},
+  {name:"seismic.com",org_id:135449,creator:"dplessis@seismic.com",board_id:241398,source:240403,type:"inspirational_board",date:"2026-04-14T16:21:34"},
+  {name:"coupa.com",org_id:4130,creator:"axelle.boyer@coupa.com",board_id:241377,source:239414,type:"template",date:"2026-04-14T15:17:15"},
+  {name:"sage.com",org_id:145528,creator:"tim.cheong@sage.com",board_id:241376,source:null,type:"from_scratch",date:"2026-04-14T13:28:07"},
+  {name:"tierpoint.com",org_id:135057,creator:"morenike.krekeler@tierpoint.com",board_id:241358,source:160978,type:"inspirational_board",date:"2026-04-14T03:16:37"},
+  {name:"workday.com",org_id:134879,creator:"anna.miller@workday.com",board_id:241323,source:206955,type:"inspirational_board",date:"2026-04-13T22:05:16"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241134,source:null,type:"from_scratch",date:"2026-04-10T12:21:18"},
+  {name:"workday.com",org_id:134879,creator:"pam.moon@workday.com",board_id:241055,source:240889,type:"inspirational_board",date:"2026-04-09T16:20:11"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240901,source:null,type:"from_scratch",date:"2026-04-08T10:42:29"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240899,source:null,type:"from_scratch",date:"2026-04-08T09:40:36"},
+  {name:"dailypay.com",org_id:138367,creator:"jenny.sylvers@dailypay.com",board_id:240852,source:239775,type:"inspirational_board",date:"2026-04-07T15:31:37"},
+  {name:"reputation.com",org_id:145924,creator:"bsaramak@reputation.com",board_id:240826,source:233778,type:"inspirational_board",date:"2026-04-07T06:08:02"},
+  {name:"reputation.com",org_id:145924,creator:"bsaramak@reputation.com",board_id:240825,source:233778,type:"inspirational_board",date:"2026-04-07T05:59:42"},
+  {name:"coupa.com",org_id:4130,creator:"natalie.boyer@coupa.com",board_id:240822,source:239414,type:"template",date:"2026-04-07T03:29:57"},
+  {name:"seismic.com",org_id:135449,creator:"cbogdan@seismic.com",board_id:240804,source:235070,type:"inspirational_board",date:"2026-04-06T20:23:22"},
+  {name:"sprinklr.com",org_id:142593,creator:"stephanie.mcneeley@sprinklr.com",board_id:240795,source:null,type:"from_scratch",date:"2026-04-06T18:58:17"},
+  {name:"coupa.com",org_id:4130,creator:"ina.shpak@coupa.com",board_id:240725,source:null,type:"from_scratch",date:"2026-04-02T21:36:41"},
+  {name:"sprinklr.com",org_id:142593,creator:"stephanie.mcneeley@sprinklr.com",board_id:240722,source:null,type:"from_scratch",date:"2026-04-02T19:16:36"},
+  {name:"loftware.com",org_id:145891,creator:"jkenney@loftware.com",board_id:240692,source:null,type:"from_scratch",date:"2026-04-02T08:20:17"},
+  {name:"checkpoint.com",org_id:140017,creator:"alexandrad@checkpoint.com",board_id:240686,source:null,type:"from_scratch",date:"2026-04-01T22:44:33"},
+  {name:"workday.com",org_id:134879,creator:"matt.thayer@workday.com",board_id:240617,source:null,type:"from_scratch",date:"2026-03-31T21:57:01"},
+  {name:"loftware.com",org_id:145891,creator:"jkenney@loftware.com",board_id:240276,source:null,type:"from_scratch",date:"2026-03-25T19:34:51"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240127,source:null,type:"from_scratch",date:"2026-03-24T15:07:18"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240125,source:null,type:"from_scratch",date:"2026-03-24T14:51:52"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240118,source:null,type:"from_scratch",date:"2026-03-24T11:50:40"},
+  {name:"loftware.com",org_id:145891,creator:"jkenney@loftware.com",board_id:240079,source:null,type:"from_scratch",date:"2026-03-23T19:27:59"},
+  {name:"loftware.com",org_id:145891,creator:"jkenney@loftware.com",board_id:240069,source:null,type:"from_scratch",date:"2026-03-23T16:58:01"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240039,source:null,type:"from_scratch",date:"2026-03-23T11:08:03"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240036,source:null,type:"from_scratch",date:"2026-03-23T10:43:14"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:240034,source:232009,type:"inspirational_board",date:"2026-03-23T10:00:56"},
+  {name:"loftware.com",org_id:145891,creator:"jkenney@loftware.com",board_id:239996,source:null,type:"from_scratch",date:"2026-03-22T15:04:56"},
+  {name:"seismic.com",org_id:135449,creator:"cbogdan@seismic.com",board_id:239918,source:174283,type:"template",date:"2026-03-20T21:53:27"},
+  {name:"datarobot.com",org_id:146749,creator:"tomas.bomfim@datarobot.com",board_id:239914,source:null,type:"from_scratch",date:"2026-03-20T20:09:36"},
+  {name:"datarobot.com",org_id:146749,creator:"tomas.bomfim@datarobot.com",board_id:239912,source:238176,type:"inspirational_board",date:"2026-03-20T19:40:55"},
+  {name:"datarobot.com",org_id:146749,creator:"emily.kessler@datarobot.com",board_id:239902,source:null,type:"from_scratch",date:"2026-03-20T17:29:23"},
+  {name:"datarobot.com",org_id:146749,creator:"tomas.bomfim@datarobot.com",board_id:239898,source:null,type:"from_scratch",date:"2026-03-20T15:57:37"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:239886,source:221199,type:"template",date:"2026-03-20T12:23:15"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:239882,source:221197,type:"template",date:"2026-03-20T09:50:29"},
+  {name:"seismic.com",org_id:135449,creator:"cbogdan@seismic.com",board_id:239873,source:227015,type:"inspirational_board",date:"2026-03-19T21:22:42"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:239862,source:228067,type:"inspirational_board",date:"2026-03-19T18:32:07"},
+  {name:"ensono.com",org_id:134869,creator:"anna.forster@ensono.com",board_id:239757,source:null,type:"from_scratch",date:"2026-03-18T17:11:41"},
+  {name:"coupa.com",org_id:4130,creator:"santiago.dominguez@coupa.com",board_id:239678,source:null,type:"from_scratch",date:"2026-03-17T14:19:33"},
+  {name:"coupa.com",org_id:4130,creator:"santiago.dominguez@coupa.com",board_id:239674,source:null,type:"from_scratch",date:"2026-03-17T13:45:07"},
+  {name:"coupa.com",org_id:4130,creator:"gina.cimarelli@coupa.com",board_id:239634,source:null,type:"from_scratch",date:"2026-03-16T20:16:17"},
+  {name:"coupa.com",org_id:4130,creator:"ben.matson@coupa.com",board_id:239480,source:null,type:"from_scratch",date:"2026-03-13T20:12:52"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239350,source:238671,type:"inspirational_board",date:"2026-03-12T12:35:46"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239255,source:238671,type:"inspirational_board",date:"2026-03-12T01:56:00"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239251,source:238671,type:"inspirational_board",date:"2026-03-11T23:45:14"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239250,source:238671,type:"inspirational_board",date:"2026-03-11T23:04:12"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239249,source:238671,type:"inspirational_board",date:"2026-03-11T23:03:44"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239248,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:42"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239247,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:17"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239246,source:238671,type:"inspirational_board",date:"2026-03-11T22:57:28"},
+  {name:"checkpoint.com",org_id:140017,creator:"michali@checkpoint.com",board_id:239178,source:172060,type:"template",date:"2026-03-11T19:05:14"},
+  {name:"ringcentral.com",org_id:181,creator:"danielle.algarme@ringcentral.com",board_id:239166,source:237117,type:"template",date:"2026-03-11T17:44:56"},
+  {name:"dailypay.com",org_id:138367,creator:"jenny.sylvers@dailypay.com",board_id:238903,source:null,type:"from_scratch",date:"2026-03-09T18:45:46"},
+  {name:"zoom.us",org_id:2401,creator:"kaylie.deshler@zoom.us",board_id:238483,source:null,type:"from_scratch",date:"2026-03-03T04:25:59"},
+  {name:"workday.com",org_id:134879,creator:"ellen.waugh@workday.com",board_id:238151,source:null,type:"from_scratch",date:"2026-02-26T17:29:54"},
+  {name:"coupa.com",org_id:4130,creator:"bianca.queiroz@coupa.com",board_id:238073,source:null,type:"from_scratch",date:"2026-02-25T17:56:21"},
+  {name:"zoom.us",org_id:2401,creator:"mark.obrien@zoom.us",board_id:237483,source:null,type:"from_scratch",date:"2026-02-17T13:54:16"},
+  {name:"coupa.com",org_id:4130,creator:"ina.shpak@coupa.com",board_id:236992,source:null,type:"from_scratch",date:"2026-02-09T18:35:18"},
+  {name:"coupa.com",org_id:4130,creator:"mariella.fischer@coupa.com",board_id:236724,source:null,type:"from_scratch",date:"2026-02-05T08:39:13"},
+  {name:"zoom.us",org_id:2401,creator:"kaylie.deshler@zoom.us",board_id:236694,source:null,type:"from_scratch",date:"2026-02-04T19:29:05"},
+  {name:"workday.com",org_id:134879,creator:"tenzin.kalden@workday.com",board_id:236633,source:null,type:"from_scratch",date:"2026-02-03T22:40:51"},
+  {name:"workday.com",org_id:134879,creator:"joey.benhail@workday.com",board_id:235955,source:null,type:"from_scratch",date:"2026-01-22T21:08:20"},
+  {name:"checkpoint.com",org_id:140017,creator:"michali@checkpoint.com",board_id:235674,source:null,type:"from_scratch",date:"2026-01-20T19:05:32"},
+  {name:"checkpoint.com",org_id:140017,creator:"juliol@checkpoint.com",board_id:235635,source:null,type:"from_scratch",date:"2026-01-19T20:24:28"},
 ];
 
 // ── Helpers ──
@@ -197,7 +192,7 @@ const getWeek = d => {
 // ── KPIs ──
 const total = DATA.length;
 const orgs = new Set(DATA.map(d => d.name)).size;
-const creators = new Set(DATA.map(d => d.creator_enc)).size;
+const creators = new Set(DATA.map(d => d.creator)).size;
 const now = new Date('2026-04-23');
 const last7 = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 7).length;
 const last30 = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 30).length;
@@ -304,10 +299,9 @@ function unlockPII() {
   const pw = document.getElementById('piiPassword').value;
   const err = document.getElementById('lockError');
   const banner = document.getElementById('lockBanner');
-  // verify by decoding a known-length test: check if result looks like an email
   let test = '';
-  try { test = xorDec('OgQBBhZTHlRXOhcJBRRyQ1NRLUsPBhU=', pw); } catch(e) {}
-  if (test === 'ramona.farrell@sage.com') {
+  try { test = xorDec('ACAgICBtZnN6ASE=', pw); } catch(e) {}
+  if (test === 'HELIX_VALID') {
     piiUnlocked = true;
     piiKey = pw;
     err.style.display = 'none';
@@ -324,31 +318,55 @@ function unlockPII() {
 // ── Top Creators Table ──
 const creatorMap = {};
 DATA.forEach(d => {
-  if (!creatorMap[d.creator_enc]) creatorMap[d.creator_enc] = {org:d.name, count:0, types:{}};
-  creatorMap[d.creator_enc].count++;
-  creatorMap[d.creator_enc].types[d.type] = (creatorMap[d.creator_enc].types[d.type]||0)+1;
+  if (!creatorMap[d.creator]) creatorMap[d.creator] = {org:d.name, count:0, types:{}};
+  creatorMap[d.creator].count++;
+  creatorMap[d.creator].types[d.type] = (creatorMap[d.creator].types[d.type]||0)+1;
 });
 const topCreators = Object.entries(creatorMap).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
-function renderCreatorsTable() {
-  document.getElementById('creatorsTable').innerHTML = topCreators.map(([enc, info]) => {
-    const topType = Object.entries(info.types).sort((a,b)=>b[1]-a[1])[0][0];
-    const badgeClass = topType === 'from_scratch' ? 'badge-scratch' : topType === 'template' ? 'badge-template' : 'badge-insp';
-    const label = topType === 'from_scratch' ? 'Fully AI' : topType === 'template' ? 'From Template' : 'From Board';
-    return `<tr><td>${showEmail(enc)}</td><td>${info.org}</td><td>${info.count}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
-  }).join('');
-}
-renderCreatorsTable();
+document.getElementById('creatorsTable').innerHTML = topCreators.map(([email, info]) => {
+  const topType = Object.entries(info.types).sort((a,b)=>b[1]-a[1])[0][0];
+  const badgeClass = topType === 'from_scratch' ? 'badge-scratch' : topType === 'template' ? 'badge-template' : 'badge-insp';
+  const label = topType === 'from_scratch' ? 'Fully AI' : topType === 'template' ? 'From Template' : 'From Board';
+  return `<tr><td>${email}</td><td>${info.org}</td><td>${info.count}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
+}).join('');
 
 // ── Recent Boards Table ──
 const recent = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 7).sort((a,b) => new Date(b.date)-new Date(a.date));
-function renderRecentTable() {
-  document.getElementById('recentTable').innerHTML = (recent.length ? recent : DATA.slice(0,5)).map(d => {
-    const badgeClass = d.type === 'from_scratch' ? 'badge-scratch' : d.type === 'template' ? 'badge-template' : 'badge-insp';
-    const label = d.type === 'from_scratch' ? 'From Scratch' : d.type === 'template' ? 'Template' : 'From Board';
-    return `<tr><td>${fmt(d.date)}</td><td>${d.name}</td><td>${showEmail(d.creator_enc)}</td><td>${d.board_id}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
-  }).join('');
-}
-renderRecentTable();
+document.getElementById('recentTable').innerHTML = (recent.length ? recent : DATA.slice(0,5)).map(d => {
+  const badgeClass = d.type === 'from_scratch' ? 'badge-scratch' : d.type === 'template' ? 'badge-template' : 'badge-insp';
+  const label = d.type === 'from_scratch' ? 'From Scratch' : d.type === 'template' ? 'Template' : 'From Board';
+  return `<tr><td>${fmt(d.date)}</td><td>${d.name}</td><td>${d.creator}</td><td>${d.board_id}</td><td><span class="badge ${badgeClass}">${label}</span></td></tr>`;
+}).join('');
 </script>
+
+<script>
+(function() {
+  function xorDec(enc, key) {
+    const raw = atob(enc), out = [];
+    for (let i = 0; i < raw.length; i++) out.push(String.fromCharCode(raw.charCodeAt(i) ^ key.charCodeAt(i % key.length)));
+    return out.join('');
+  }
+  window.checkGate = function() {
+    const pw = document.getElementById('gatePass').value;
+    const err = document.getElementById('gateErr');
+    if (xorDec('ACAgICBtZnN6ASE=', pw) === 'HELIX_VALID') {
+      document.getElementById('gate').style.display = 'none';
+      sessionStorage.setItem('hx_ok', '1');
+    } else {
+      err.textContent = 'Incorrect password. Please try again.';
+      const inp = document.getElementById('gatePass');
+      inp.style.borderColor = '#f85149';
+      setTimeout(() => { inp.style.borderColor = '#30363d'; err.textContent = ''; }, 2000);
+    }
+  };
+  if (sessionStorage.getItem('hx_ok') === '1') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const g = document.getElementById('gate');
+      if (g) g.style.display = 'none';
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
