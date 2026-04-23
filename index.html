@@ -360,10 +360,8 @@ document.getElementById('recentTable').innerHTML = (recent.length ? recent : DAT
     }
   };
   if (sessionStorage.getItem('hx_ok') === '1') {
-    document.addEventListener('DOMContentLoaded', () => {
-      const g = document.getElementById('gate');
-      if (g) g.style.display = 'none';
-    });
+    const g = document.getElementById('gate');
+    if (g) g.style.display = 'none';
   }
 })();
 </script>
