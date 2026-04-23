@@ -79,6 +79,14 @@
 
 <script>
 const DATA = [
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241851,source:null,type:"from_scratch",date:"2026-04-22T11:30:26"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241849,source:227630,type:"inspirational_board",date:"2026-04-22T10:38:00"},
+  {name:"loftware.com",org_id:145891,creator:"jhalbauer@loftware.com",board_id:241835,source:null,type:"from_scratch",date:"2026-04-22T07:17:11"},
+  {name:"seeq.com",org_id:135512,creator:"brenna.sermeno@seeq.com",board_id:241817,source:null,type:"from_scratch",date:"2026-04-21T19:45:03"},
+  {name:"seeq.com",org_id:135512,creator:"brenna.sermeno@seeq.com",board_id:241807,source:null,type:"from_scratch",date:"2026-04-21T18:03:29"},
+  {name:"coupa.com",org_id:4130,creator:"ina.shpak@coupa.com",board_id:241732,source:239414,type:"template",date:"2026-04-20T17:11:25"},
+  {name:"ringcentral.com",org_id:181,creator:"danielle.algarme@ringcentral.com",board_id:241558,source:237112,type:"template",date:"2026-04-16T14:57:15"},
+  {name:"sage.com",org_id:145528,creator:"ramona.farrell@sage.com",board_id:241536,source:null,type:"from_scratch",date:"2026-04-16T11:27:31"},
   {name:"sage.com",org_id:145528,creator:"tim.cheong@sage.com",board_id:241461,source:null,type:"from_scratch",date:"2026-04-15T13:44:31"},
   {name:"sage.com",org_id:145528,creator:"tim.cheong@sage.com",board_id:241423,source:null,type:"from_scratch",date:"2026-04-14T19:14:16"},
   {name:"seismic.com",org_id:135449,creator:"dplessis@seismic.com",board_id:241398,source:240403,type:"inspirational_board",date:"2026-04-14T16:21:34"},
@@ -131,8 +139,8 @@ const DATA = [
   {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239250,source:238671,type:"inspirational_board",date:"2026-03-11T23:04:12"},
   {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239249,source:238671,type:"inspirational_board",date:"2026-03-11T23:03:44"},
   {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239248,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:42"},
-  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239247,source:238671,type:"inspirational_board",date:"2026-03-11T22:57:28"},
-  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239246,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:17"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239247,source:238671,type:"inspirational_board",date:"2026-03-11T22:58:17"},
+  {name:"workday.com",org_id:134879,creator:"jesse.spielvogel@workday.com",board_id:239246,source:238671,type:"inspirational_board",date:"2026-03-11T22:57:28"},
   {name:"checkpoint.com",org_id:140017,creator:"michali@checkpoint.com",board_id:239178,source:172060,type:"template",date:"2026-03-11T19:05:14"},
   {name:"ringcentral.com",org_id:181,creator:"danielle.algarme@ringcentral.com",board_id:239166,source:237117,type:"template",date:"2026-03-11T17:44:56"},
   {name:"dailypay.com",org_id:138367,creator:"jenny.sylvers@dailypay.com",board_id:238903,source:null,type:"from_scratch",date:"2026-03-09T18:45:46"},
@@ -163,7 +171,7 @@ const getWeek = d => {
 const total = DATA.length;
 const orgs = new Set(DATA.map(d => d.name)).size;
 const creators = new Set(DATA.map(d => d.creator)).size;
-const now = new Date('2026-04-16');
+const now = new Date('2026-04-23');
 const last7 = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 7).length;
 const last30 = DATA.filter(d => (now - new Date(d.date)) / 86400000 <= 30).length;
 
